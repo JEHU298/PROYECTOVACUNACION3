@@ -157,7 +157,8 @@
     	}        
     }
     function funcionEnviar(){
-
+    var scannedTextMemo = document.getElementById("scannedTextMemo");
+    var scannedText = scannedTextMemo.value
     //window.open("formato.php?txtCurp="+curp+"&txtNombres="+nombres+"&txtApellidos="+apellidos+"&txtEntidad="+entidad+"&txtDate="+date);   
     window.open("formato.php?escaneo="+scannedText);   
     }
