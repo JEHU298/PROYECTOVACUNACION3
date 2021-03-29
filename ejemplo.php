@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="JEHU ROBERTO PACHECO MAYA" />
+    <!--                                                               -->
+    <!-- Dar enlace con el archivo de estilos css-->
+    <!--                                                               -->
+    <link type="text/css" rel="stylesheet" href="JsQRScanner.css">
+
+    <title>PROYECTO VACUNA JEHÚ PACHECO </title>
+    
+    <!--                                           -->
+    <!-- Agregamos las bibliotecas de js  -->
+	<script type="text/javascript" src="jsPretty/jsqrscanner.nocache.js"></script>
+	<script type="text/javascript" src="jsPretty/9C51964BB0BBCC41BB79120ED90449EA.cache.js"></script>
+	<script type="text/javascript" src="jsPretty/88507C13C1223C3F2A335CFAAA4EF584.cache.js"></script>
+	<script type="text/javascript" src="jsPretty/B566A15506556F952CAD2B7994FFA824.cache.js"></script>
+	<script type="text/javascript" src="jsPretty/D9940D84355A4C8E89013B8814821244.cache.js"></script>
+	<script type="text/javascript" src="jsPretty/F4C3969B01AFD421179360B47BCEA2E0.cache.js"></script>
+  </head>
+  <body>
+
+    <div class="row-element-set row-element-set-QRScanner">
+    <!-- Muestra un mensaje de en caso de no tener habilitado el java script-->
+    <noscript>
+      <div class="row-element-set error_message">
+        JavaScript no está habilitado, habilitelo e intente de nuevo 
+      </div>
+    </noscript>
+    <div class="row-element-set error_message" id="secure-connection-message" style="display: none;" hidden >
+      La libreria necesita de una conexión segura https
+    </div>
+    <script> 
+    if (location.protocol != 'https:') { 
+      document.getElementById('secure-connection-message').style='display: block';
+      }
+      </script>  
+
+      <h1>CAPTURA</h1>
+      <div class="row-element">
+        <div class="FlexPanel detailsPanel QRScannerShort">
+          <div class="FlexPanel shortInfoPanel">
+            <div class="gwt-HTML">
+              Escanea el QR frente a la cámara 
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class="row-element">
+        <div class="qrscanner" id="scanner">
+        <div><video class="qrPreviewVideo" autoplay="autoplay" src="pagina%20Archivos/a.html"></video></div></div>
+      </div>
+      <div class="row-element">
+        <div class="form-field form-field-memo">
+          <div class="form-field-caption-panel">
+            <div class="gwt-Label form-field-caption">
+              Resultado del escaneo 
+            </div>
+          </div>
+          <div class="FlexPanel form-field-input-panel">
+            <textarea id="scannedTextMemo" class="textInput form-memo form-field-input textInput-readonly" rows="3" readonly>
+            </textarea>
+          </div>
+        </div>
+        <div class="form-field form-field-memo">
+          <div class="form-field-caption-panel">
+            <div class="gwt-Label form-field-caption">
+              Todos los escaneos 
+            </div>
+          </div>
+          <div class="FlexPanel form-field-input-panel">
+            <textarea id="scannedTextMemoHist" class="textInput form-memo form-field-input textInput-readonly" value="" rows="6" readonly>
+            </textarea>
+            <button style="  background-color: #4CAF50;border-radius: 10px 10px 10px 10px;-moz-border-radius: 10px 10px 10px 10px;-webkit-border-radius: 10px 10px 10px 10px;border: 0px solid #000000;color: white;padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;" onclick="funcionEnviar()">PROCESAR REGISTRO</button> 
+          </div>
+        </div>
+      </div>
+      <br>
+    </div>
+  <script type="text/javascript">
+    function onQRCodeScanned(scannedText)
+    {
+    	var scannedTextMemo = document.getElementById("scannedTextMemo");
+    	if(scannedTextMemo)
+    	{
+    		scannedTextMemo.value = scannedText;
+    	}
+    	var scannedTextMemoHist = document.getElementById("scannedTextMemoHist");
+    	if(scannedTextMemoHist)
+    	{
+    		scannedTextMemoHist.value = scannedTextMemoHist.value + '\n' + scannedText;
+    	}
+    }
+    
+    function provideVideo()
+    {
+        var n = navigator;
+
+        if (n.mediaDevices && n.mediaDevices.getUserMedia)
+        {
+          return n.mediaDevices.getUserMedia({
+            video: {
+              facingMode: "environment"
+            },
+            audio: false
+          });
+        } 
+        
+        return Promise.reject('Tu navegador no soporta getUserMedia');
+    }
+
+    function provideVideoQQ()
+    {
+        return navigator.mediaDevices.enumerateDevices()
+        .then(function(devices) {
+            var exCameras = [];
+            devices.forEach(function(device) {
+            if (device.kind === 'videoinput') {
+              exCameras.push(device.deviceId)
+            }
+         });
+            
+            return Promise.resolve(exCameras);
+        }).then(function(ids){
+            if(ids.length === 0)
+            {
+              return Promise.reject('No hay un dispositivo de camara');
+            }
+            
+            return navigator.mediaDevices.getUserMedia({
+                video: {
+                  'optional': [{
+                    'sourceId': ids.length === 1 ? ids[0] : ids[1]
+                    }]
+                }
+            });        
+        });                
+    }
+    
+    //Esta funcion es llamada cuando el escaner esta listo 
+    function JsQRScannerReady()
+    {
+        //crea un nuevo escaner pasando para llamar la funcion que sera invocada cuando haya tenido resultado exitoso
+        var jbScanner = new JsQRScanner(onQRCodeScanned);
+        //reduce el tamaño de la imagen para que sea mas faci lde utilizar en dispositivos moviles 
+        jbScanner.setSnapImageMaxSize(300);
+    	var scannerParentElement = document.getElementById("scanner");
+    	if(scannerParentElement)
+    	{
+    	    //append the jbScanner to an existing DOM element
+    		jbScanner.appendTo(scannerParentElement);
+    	}        
+    }
+    function funcionEnviar(){
+
+    //window.open("formato.php?txtCurp="+curp+"&txtNombres="+nombres+"&txtApellidos="+apellidos+"&txtEntidad="+entidad+"&txtDate="+date);   
+    window.open("formato.php?escaneo="+scannedText);   
+    }
+  </script>    
+  </body>
+</html>
